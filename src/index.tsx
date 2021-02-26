@@ -9,26 +9,24 @@ import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
 interface Props {
   date: Date
-  timeRange?: { start: Date; end: Date }
+  timeRange?: TimeRange
   onSelectRange: (start: Date, end: Date) => void
 }
 
+interface TimeRange {
+  start?: Date
+  end?: Date
+}
 const Calendar: React.FC<Props> = ({
   date,
   timeRange,
   onSelectRange
 }: Props) => {
   const [currentDate, setDate] = useState<Date>(date)
-
-  const [internalRange, setInternalRange] = useState<{
-    start?: Date
-    end?: Date
-  }>({ start: timeRange?.start, end: timeRange?.end })
-
-  const [usePreselection, setPreselection] = useState<{
-    start?: Date
-    end?: Date
-  }>({ start: timeRange?.start, end: timeRange?.end })
+  const [internalRange, setInternalRange] = useState<TimeRange>(timeRange || {})
+  const [usePreselection, setPreselection] = useState<TimeRange>(
+    timeRange || {}
+  )
 
   const months = [
     'January',
@@ -45,17 +43,13 @@ const Calendar: React.FC<Props> = ({
     'December'
   ]
 
-  function _addMonths(date: Date, months: number) {
-    return addMonths(date, months)
-  }
-
   const previousMonth = () => {
-    const newDate = _addMonths(currentDate, -1)
+    const newDate = addMonths(currentDate, -1)
     setDate(newDate)
   }
 
   const nextMonth = () => {
-    const newDate = _addMonths(currentDate, +1)
+    const newDate = addMonths(currentDate, +1)
     setDate(newDate)
   }
 
@@ -82,65 +76,51 @@ const Calendar: React.FC<Props> = ({
   }
 
   const getClassForDate = (date: Date) => {
+    /* Preselection active */
     if (usePreselection.start && usePreselection.end) {
-      if (
-        usePreselection.start.getTime() !== usePreselection.end.getTime() &&
-        isSameDay(date, usePreselection.start)
-      ) {
-        return classNames(styles.date_pre_selected_start)
-      }
-
-      if (
-        usePreselection.start.getTime() !== usePreselection.end.getTime() &&
-        isSameDay(date, usePreselection.end)
-      ) {
-        return classNames(styles.date_pre_selected_end)
-      }
-
-      if (
-        isWithinInterval(date, {
-          start: usePreselection.start,
-          end: usePreselection.end
-        })
-      ) {
-        return classNames(styles.date_pre_selected)
+      if (usePreselection.start.getTime() !== usePreselection.end.getTime()) {
+        if (isSameDay(date, usePreselection.start)) {
+          return classNames(styles.date_pre_selected_start)
+        } else if (isSameDay(date, usePreselection.end)) {
+          return classNames(styles.date_pre_selected_end)
+        } else if (
+          isWithinInterval(date, {
+            start: usePreselection.start,
+            end: usePreselection.end
+          })
+        ) {
+          return classNames(styles.date_pre_selected)
+        }
       }
     } else if (internalRange.start && internalRange.end) {
+      /* Preselection has been completed and the range is selected */
       if (
         internalRange.start.getTime() === internalRange.end.getTime() &&
         isSameDay(date, internalRange.start)
       ) {
         return classNames(styles.date_selected_single)
-      }
-
-      if (
-        internalRange.start.getTime() !== internalRange.end.getTime() &&
-        isSameDay(date, internalRange.start)
+      } else if (
+        internalRange.start.getTime() !== internalRange.end.getTime()
       ) {
-        return classNames(styles.date_selected_first)
-      }
-
-      if (
-        internalRange.start.getTime() !== internalRange.end.getTime() &&
-        isSameDay(date, internalRange.end)
-      ) {
-        return classNames(styles.date_selected_last)
-      }
-
-      if (
-        internalRange.start.getTime() !== internalRange.end.getTime() &&
-        isWithinInterval(date, {
-          start: internalRange.start,
-          end: internalRange.end
-        })
-      ) {
-        return classNames(styles.date_selected)
-      }
-
-      if (isSameDay(date, new Date())) {
-        return classNames(styles.today)
+        if (isSameDay(date, internalRange.start)) {
+          return classNames(styles.date_selected_first)
+        } else if (isSameDay(date, internalRange.end)) {
+          return classNames(styles.date_selected_last)
+        } else if (
+          isWithinInterval(date, {
+            start: internalRange.start,
+            end: internalRange.end
+          })
+        ) {
+          return classNames(styles.date_selected)
+        }
       }
     }
+
+    if (isSameDay(date, new Date())) {
+      return classNames(styles.today)
+    }
+
     return ''
   }
 
@@ -201,8 +181,8 @@ const Calendar: React.FC<Props> = ({
 
     for (let j = 1; j <= nextDays; j++) {
       const _day = new Date(
-        _addMonths(currentDate, +1).getFullYear(),
-        _addMonths(currentDate, +1).getMonth(),
+        addMonths(currentDate, +1).getFullYear(),
+        addMonths(currentDate, +1).getMonth(),
         j
       )
       days.push({

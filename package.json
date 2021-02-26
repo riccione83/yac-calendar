@@ -4,7 +4,10 @@
   "description": "Calendar component written in react and typescript",
   "author": "riccione83",
   "license": "MIT",
-  "repository": "riccione83/yac-calendar",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/riccione83/yac-calendar.git"
+  },
   "main": "dist/index.js",
   "module": "dist/index.modern.js",
   "source": "src/index.tsx",
