@@ -16,6 +16,11 @@ or
 yarn add yac-calendar
 ```
 
+## Preview
+
+![alt text](https://github.com/riccione83/yac-calendar/raw/master/example/ezgif-7-ee8485ad0ff8.gif?raw=true)
+![alt text](https://github.com/riccione83/yac-calendar/raw/master/example/Screenshot.png)
+
 ## Usage
 
 ```tsx
@@ -42,10 +47,10 @@ class Example extends Component {
 
 #### Props:
 
-`date` => First date to show (this will select the first month)
-`timeRange` => Start and End date for the selection (optional)
-`onSelectRange` => callback after new range selected on the calendar.
+`date` => First date to show (this will select the first month)<br>
+`timeRange` => Start and End date for the selection (optional)<br>
+`onSelectRange` => callback after new range selected on the calendar.<br>
 
 ## License
 
-MIT © [riccione83](https://github.com/riccione83)
+MIT © [Riccardo Rizzo](https://www.riccardorizzo.eu) - [riccione83](https://github.com/riccione83)
