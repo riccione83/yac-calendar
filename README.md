@@ -19,7 +19,7 @@ yarn add yac-calendar
 ## Preview
 
 ![alt text](https://github.com/riccione83/yac-calendar/raw/master/example/ezgif-7-ee8485ad0ff8.gif?raw=true)<br>
-![alt text](https://github.com/riccione83/yac-calendar/raw/master/example/double_calendar.png)
+![alt text](https://github.com/riccione83/yac-calendar/raw/master/example/double_calendar.png)<br>
 ![alt text](https://github.com/riccione83/yac-calendar/raw/master/example/Screenshot.png)
 
 ## Usage
