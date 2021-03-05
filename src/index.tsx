@@ -1,11 +1,9 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
 import addMonths from 'date-fns/addMonths'
 import isSameDay from 'date-fns/isSameDay'
 import isWithinInterval from 'date-fns/isWithinInterval'
 import React, { useState } from 'react'
 import styles from './styles.module.css'
-import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
 interface Props {
   date: Date
@@ -82,16 +80,16 @@ const Calendar: React.FC<Props> = ({
     if (usePreselection.start && usePreselection.end) {
       if (usePreselection.start.getTime() !== usePreselection.end.getTime()) {
         if (isSameDay(date, usePreselection.start)) {
-          return classNames(styles.date_pre_selected_start)
+          return classNames(styles['date_pre_selected_start'])
         } else if (isSameDay(date, usePreselection.end)) {
-          return classNames(styles.date_pre_selected_end)
+          return classNames(styles['date_pre_selected_end'])
         } else if (
           isWithinInterval(date, {
             start: usePreselection.start,
             end: usePreselection.end
           })
         ) {
-          return classNames(styles.date_pre_selected)
+          return classNames(styles['date_pre_selected'])
         }
       }
     } else if (internalRange.start && internalRange.end) {
@@ -100,27 +98,27 @@ const Calendar: React.FC<Props> = ({
         internalRange.start.getTime() === internalRange.end.getTime() &&
         isSameDay(date, internalRange.start)
       ) {
-        return classNames(styles.date_selected_single)
+        return classNames(styles['date_selected_single'])
       } else if (
         internalRange.start.getTime() !== internalRange.end.getTime()
       ) {
         if (isSameDay(date, internalRange.start)) {
-          return classNames(styles.date_selected_first)
+          return classNames(styles['date_selected_first'])
         } else if (isSameDay(date, internalRange.end)) {
-          return classNames(styles.date_selected_last)
+          return classNames(styles['date_selected_last'])
         } else if (
           isWithinInterval(date, {
             start: internalRange.start,
             end: internalRange.end
           })
         ) {
-          return classNames(styles.date_selected)
+          return classNames(styles['date_selected'])
         }
       }
     }
 
     if (isSameDay(date, new Date())) {
-      return classNames(styles.today)
+      return classNames(styles['today'])
     }
 
     return ''
@@ -197,36 +195,38 @@ const Calendar: React.FC<Props> = ({
     return days
   }
 
-  console.info(!useDoubleMonths)
-
   return (
-    <div className={styles.container}>
+    <div className={styles['container']}>
       <div
-        className={useDoubleMonths ? styles.calendar_multiple : styles.calendar}
+        className={
+          useDoubleMonths ? styles['calendar_multiple'] : styles['calendar']
+        }
       >
-        <div className={styles.month}>
-          <FontAwesomeIcon
-            icon={faAngleLeft}
+        <div className={styles['month']}>
+          <a
             onClick={() => previousMonth()}
-            size={'3x'}
+            className={styles['calendar-button']}
             style={{ cursor: 'pointer' }}
-          />
-          <div className={styles.date}>
+          >
+            &#8249;
+          </a>
+          <div className={styles['date']}>
             <h1>{months[currentDate.getMonth()]}</h1>
             <p>{currentDate.getFullYear()}</p>
           </div>
           {!useDoubleMonths ? (
-            <FontAwesomeIcon
-              icon={faAngleRight}
+            <a
               onClick={() => nextMonth()}
-              size={'3x'}
+              className={styles['calendar-button']}
               style={{ cursor: 'pointer' }}
-            />
+            >
+              &#8250;
+            </a>
           ) : (
             <div />
           )}
         </div>
-        <div className={styles.weekdays}>
+        <div className={styles['weekdays']}>
           <div>Sun</div>
           <div>Mon</div>
           <div>Tue</div>
@@ -235,7 +235,7 @@ const Calendar: React.FC<Props> = ({
           <div>Fri</div>
           <div>Sat</div>
         </div>
-        <div className={styles.days}>
+        <div className={styles['days']}>
           {renderDays(currentDate, true, !useDoubleMonths).map((day) => (
             <div
               key={day.data.toString()}
@@ -252,23 +252,24 @@ const Calendar: React.FC<Props> = ({
       {useDoubleMonths && (
         <div
           className={
-            useDoubleMonths ? styles.calendar_multiple : styles.calendar
+            useDoubleMonths ? styles['calendar_multiple'] : styles['calendar']
           }
         >
-          <div className={styles.month}>
+          <div className={styles['month']}>
             <div />
-            <div className={styles.date}>
+            <div className={styles['date']}>
               <h1>{months[addMonths(currentDate, 1).getMonth()]}</h1>
               <p>{addMonths(currentDate, 1).getFullYear()}</p>
             </div>
-            <FontAwesomeIcon
-              icon={faAngleRight}
+            <a
               onClick={() => nextMonth()}
-              size={'3x'}
+              className={styles['calendar-button']}
               style={{ cursor: 'pointer' }}
-            />
+            >
+              &#8250;
+            </a>
           </div>
-          <div className={styles.weekdays}>
+          <div className={styles['weekdays']}>
             <div>Sun</div>
             <div>Mon</div>
             <div>Tue</div>
@@ -277,7 +278,7 @@ const Calendar: React.FC<Props> = ({
             <div>Fri</div>
             <div>Sat</div>
           </div>
-          <div className={styles.days}>
+          <div className={styles['days']}>
             {renderDays(addMonths(currentDate, 1), false, true).map((day) => (
               <div
                 key={day.data.toString()}

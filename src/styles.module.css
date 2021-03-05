@@ -9,6 +9,9 @@ html {
   font-size: 62.5%;
 }
 
+.calendar-button {
+  font-size: 64px;
+}
 .container {
   width: 100%;
   height: 100vh;
