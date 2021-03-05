@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import addMonths from 'date-fns/addMonths'
 import isSameDay from 'date-fns/isSameDay'
 import isWithinInterval from 'date-fns/isWithinInterval'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import styles from './styles.module.css'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
@@ -11,6 +11,7 @@ interface Props {
   date: Date
   timeRange?: TimeRange
   onSelectRange: (start: Date, end: Date) => void
+  useDoubleMonths?: boolean
 }
 
 interface TimeRange {
@@ -20,6 +21,7 @@ interface TimeRange {
 const Calendar: React.FC<Props> = ({
   date,
   timeRange,
+  useDoubleMonths,
   onSelectRange
 }: Props) => {
   const [currentDate, setDate] = useState<Date>(date)
@@ -124,25 +126,25 @@ const Calendar: React.FC<Props> = ({
     return ''
   }
 
-  const renderDays = useMemo(() => {
-    const days: { day: number; data: Date; className: string }[] = []
+  const renderDays = (
+    date: Date,
+    renderPrevMonth: boolean,
+    renderNextMonth: boolean
+  ) => {
+    const days: { day: string; data: Date; className: string }[] = []
 
     const lastDay = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
+      date.getFullYear(),
+      date.getMonth() + 1,
       0
     ).getDate()
 
-    const prevLastDay = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      0
-    )
-    const firstDayIndex = currentDate
+    const prevLastDay = new Date(date.getFullYear(), date.getMonth(), 0)
+    const firstDayIndex = date
 
     const lastDayIndex = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
+      date.getFullYear(),
+      date.getMonth() + 1,
       0
     ).getDay()
 
@@ -156,48 +158,52 @@ const Calendar: React.FC<Props> = ({
       )
 
       days.push({
-        day: prevLastDay.getDate() - x + 1,
+        day: renderPrevMonth ? `${prevLastDay.getDate() - x + 1}` : '',
         data: _day,
-        className: classNames('prev-date', getClassForDate(_day))
+        className: renderPrevMonth
+          ? classNames(styles.prev_date, getClassForDate(_day))
+          : classNames(styles.day_disabled)
       })
     }
 
     for (let i = 1; i <= lastDay; i++) {
-      const _day = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        i
-      )
+      const _day = new Date(date.getFullYear(), date.getMonth(), i)
       days.push({
-        day: i,
+        day: `${i}`,
         data: _day,
         className:
           i === new Date().getDate() &&
-          currentDate.getMonth() === new Date().getMonth()
+          date.getMonth() === new Date().getMonth()
             ? classNames('today', getClassForDate(_day))
             : classNames('', getClassForDate(_day))
       })
     }
 
-    for (let j = 1; j <= nextDays; j++) {
-      const _day = new Date(
-        addMonths(currentDate, +1).getFullYear(),
-        addMonths(currentDate, +1).getMonth(),
-        j
-      )
-      days.push({
-        day: j,
-        data: _day,
-        className: classNames('next-date', getClassForDate(_day))
-      })
+    if (renderNextMonth) {
+      for (let j = 1; j <= nextDays; j++) {
+        const _day = new Date(
+          addMonths(date, +1).getFullYear(),
+          addMonths(date, +1).getMonth(),
+          j
+        )
+        days.push({
+          day: `${j}`,
+          data: _day,
+          className: classNames('next-date', getClassForDate(_day))
+        })
+      }
     }
 
     return days
-  }, [currentDate, internalRange, usePreselection])
+  }
+
+  console.info(!useDoubleMonths)
 
   return (
     <div className={styles.container}>
-      <div className={styles.calendar}>
+      <div
+        className={useDoubleMonths ? styles.calendar_multiple : styles.calendar}
+      >
         <div className={styles.month}>
           <FontAwesomeIcon
             icon={faAngleLeft}
@@ -209,12 +215,16 @@ const Calendar: React.FC<Props> = ({
             <h1>{months[currentDate.getMonth()]}</h1>
             <p>{currentDate.getFullYear()}</p>
           </div>
-          <FontAwesomeIcon
-            icon={faAngleRight}
-            onClick={() => nextMonth()}
-            size={'3x'}
-            style={{ cursor: 'pointer' }}
-          />
+          {!useDoubleMonths ? (
+            <FontAwesomeIcon
+              icon={faAngleRight}
+              onClick={() => nextMonth()}
+              size={'3x'}
+              style={{ cursor: 'pointer' }}
+            />
+          ) : (
+            <div />
+          )}
         </div>
         <div className={styles.weekdays}>
           <div>Sun</div>
@@ -226,7 +236,7 @@ const Calendar: React.FC<Props> = ({
           <div>Sat</div>
         </div>
         <div className={styles.days}>
-          {renderDays.map((day) => (
+          {renderDays(currentDate, true, !useDoubleMonths).map((day) => (
             <div
               key={day.data.toString()}
               className={day.className}
@@ -238,6 +248,51 @@ const Calendar: React.FC<Props> = ({
           ))}
         </div>
       </div>
+
+      {useDoubleMonths && (
+        <div
+          className={
+            useDoubleMonths ? styles.calendar_multiple : styles.calendar
+          }
+        >
+          <div className={styles.month}>
+            <div />
+            <div className={styles.date}>
+              <h1>{months[addMonths(currentDate, 1).getMonth()]}</h1>
+              <p>{addMonths(currentDate, 1).getFullYear()}</p>
+            </div>
+            <FontAwesomeIcon
+              icon={faAngleRight}
+              onClick={() => nextMonth()}
+              size={'3x'}
+              style={{ cursor: 'pointer' }}
+            />
+          </div>
+          <div className={styles.weekdays}>
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+          </div>
+          <div className={styles.days}>
+            {renderDays(addMonths(currentDate, 1), false, true).map((day) => (
+              <div
+                key={day.data.toString()}
+                className={day.className}
+                onClick={() => handleDayClick(day.data)}
+                onMouseOver={() =>
+                  timeRange?.start && handleMouseOver(day.data)
+                }
+              >
+                {day.day}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

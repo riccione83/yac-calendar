@@ -6,6 +6,7 @@ import 'yac-calendar/dist/index.css'
 const App = () => {
   return (
     <Calendar
+      useDoubleMonths
       date={new Date()}
       timeRange={{
         start: new Date(2021, 2, 24),

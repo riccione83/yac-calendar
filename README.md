@@ -44,7 +44,8 @@ class Example extends Component {
 
 `date` => First date to show (this will select the first month)
 `timeRange` => Start and End date for the selection (optional)
-`onSelectRange` => callback after new range selected on the calendar.
+`onSelectRange` => Callback after new range selected on the calendar.
+`useDoubleMonths` => Will show the component as 2 months calendar.
 
 ## License
 
